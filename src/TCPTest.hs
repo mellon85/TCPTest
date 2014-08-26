@@ -19,8 +19,7 @@ import qualified Data.ByteString as B
 
 -- Application options
 data Options = Options
-    { _verbose           :: Bool
-    , _targetAddress     :: String
+    { _targetAddress     :: String
     , _targetPort        :: Word16
     , _reportInterval    :: Int
     , _sendInterval      :: Int
@@ -28,8 +27,7 @@ data Options = Options
     } deriving(Show)
 
 options =
-    [ Option ['v'] ["verbose"]  (NoArg  (\o   -> o { _verbose        = True }))           "Verbose output enabled"
-    , Option ['a'] ["address"]  (ReqArg (\v o -> o { _targetAddress  = v }) "localhost")  "Target address"
+    [ Option ['a'] ["address"]  (ReqArg (\v o -> o { _targetAddress  = v }) "localhost")  "Target address"
     , Option ['p'] ["port"]     (ReqArg (\v o -> o { _targetPort     = read v }) "80")    "Target port"
     , Option ['i'] ["interval"] (ReqArg (\v o -> o { _reportInterval = ms2us $ read v }) "1000")  "Reporting Interval in ms"
     , Option ['t'] ["send-interval"] (ReqArg (\v o -> o { _sendInterval = ms2us $ read v }) "10") "Send Interval in ms"
@@ -39,7 +37,7 @@ options =
 {- milliseconds to nanoseconds -}
 ms2us = (*1000)
 
-defaultOptions = Options False "localhost" 80 (ms2us $ 1000) (ms2us $ 100) 128
+defaultOptions = Options "localhost" 80 (ms2us $ 1000) (ms2us $ 100) 128
 
 parseOptions = do
     args <- getArgs
