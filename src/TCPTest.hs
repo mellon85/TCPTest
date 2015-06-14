@@ -49,20 +49,20 @@ parseOptions = do
 logIOException :: IOException -> IO ()
 logIOException x = print x
 
-eitherLog m g e = case e of 
+eitherLog m g e = case e of
     Left  l -> putStrLn m >> logIOException l
     Right r -> g r >> return ()
 
 testAddress opts addr = do
     putStrLn $ "Trying " ++ (show $ addrAddress addr)
-    sockAndThread <- try $ initialize 
-    eitherLog "Couldn't create socket" (\x@(s,_) -> test s `finally` clean x) sockAndThread
+    bracket initialize test clean
+    --sockAndThread <- try $ initialize 
+    --eitherLog "Couldn't create socket" (\x@(s,_) -> test s `finally` clean x) sockAndThread
 
     where
-        test s = do
-            r   <- try $ connect s (addrAddress addr) :: IO (Either IOException ())
+        test (s,_) = do
             gen <- getStdGen
-            eitherLog "Connection failed" (sendLoop s (randoms gen)) r
+            sendLoop s (randoms gen)
 
         logIn x = do
             logIOException x
@@ -73,9 +73,10 @@ testAddress opts addr = do
         initialize = do
             sock   <- socket (addrFamily addr) (addrSocketType addr) (addrProtocol addr)
             thread <- forkIO . infoDumper sock . _reportInterval $ opts
+            connect sock . addrAddress $ addr
             return (sock,thread)
 
-        sendLoop sock ints _ = handle logIOException $ forever $ do
+        sendLoop sock ints = handle logIOException $ forever $ do
             packAndSend . fromIntegral . _packetSize $ opts
             threadDelay . _sendInterval $ opts
             where
@@ -97,3 +98,4 @@ infoDumper sock interval = do
         info <- socketInfo (fdSocket sock)
         either print print info
         threadDelay interval
+

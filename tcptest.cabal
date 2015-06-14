@@ -24,7 +24,7 @@ executable tcptest
   hs-source-dirs:      src
   c-sources:           cbits/ffi.c
   -- other-modules:       
-  build-depends:       base>=4.6, network==2.5.*, bytestring>=0.10, random>=1.0
+  build-depends:       base>=4.6, network>=2.6, bytestring>=0.10, random>=1.0
   ghc-options: -O2 -threaded
   if flag(debug)
     ghc-options: -O0 -threaded -rtsopts

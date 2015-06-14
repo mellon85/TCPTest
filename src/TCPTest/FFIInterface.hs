@@ -25,17 +25,18 @@ data TCPInfo = Info {
 
 printTCPInfoHeader :: IO ()
 printTCPInfoHeader =
-    printf "%5s %7s %9s %9s %9s %7s\n" 
+    printf "%5s %7s %9s %9s %9s %7s\n"
         "state"      "retrans"    "lost"
-        "rtt"        "rttVar"     "backoff"     
+        "rtt"        "rttVar"     "backoff"
 
 instance Show TCPInfo where
-    show e = printf "%5d %7d %9d %9d %9d %7d" 
+    show e = printf "%5d %7d %9d %9d %9d %7d"
         (state e) (retransmitted e) (lostPackets e) (rtt e) (rttVar e) (backoff e)
 
 instance Storable TCPInfo where
     sizeOf _ = 6 * (sizeOf (0::Word32))
     alignment = sizeOf
+    poke p v = pokeByteOff p 0 v
     peek ptr = do
         a <- peekByteOff ptr 0
         b <- peekByteOff ptr 4

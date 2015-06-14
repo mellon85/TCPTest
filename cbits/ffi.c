@@ -18,7 +18,7 @@ int getsocketinfo( int fd, ffi_data* data )
 {
     struct tcp_info infos;
     socklen_t size = sizeof(struct tcp_info);
-    
+
     int ret = getsockopt( fd, IPPROTO_TCP, TCP_INFO, &infos, &size);
 
     data->state = infos.tcpi_state;
